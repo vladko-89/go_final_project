@@ -1,34 +1,34 @@
 package main
 
 import (
+	"final-project/internal/date"
 	"final-project/internal/static"
+	"final-project/pgk/configs"
+	"final-project/pgk/db"
 	"fmt"
 	"net/http"
-	"os"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	err := godotenv.Load()
+	conf := configs.LoadConfig()
 
+	db, err := db.InitDb(conf.Db.Path)
 	if err != nil {
-		fmt.Println("Error loading .env file")
+		fmt.Println("Ошибка инициализации базы данных:", err)
+		return
 	}
 
-	todoPort := os.Getenv("TODO_PORT")
-	if todoPort == "" {
-		fmt.Println("TODO_PORT is not set")
-		todoPort = ":7540"
-	}
+	defer db.Close()
 
 	router := http.NewServeMux()
 
 	static.NewStaticHandler(router)
 
+	date.NewDateHandler(router)
+
 	server := http.Server{
-		Addr:    todoPort,
+		Addr:    conf.Port.Port,
 		Handler: router,
 	}
 
