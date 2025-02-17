@@ -1,7 +1,8 @@
-package date
+package date_pkg
 
 import (
 	"errors"
+	"final-project/pgk/consts"
 	"fmt"
 	"strconv"
 	"strings"
@@ -9,18 +10,17 @@ import (
 )
 
 func NextDate(nowIn time.Time, date string, repeat string) (string, error) {
-	const format = "20060102"
 
 	var currentDate time.Time
 	var err error
 
-	now, _ := time.Parse(format, nowIn.Format(format))
+	now, _ := time.Parse(consts.FormatDate, nowIn.Format(consts.FormatDate))
 
 	// Если дата не указана, подставляем текущую дату
 	if date == "" {
 		currentDate = now
 	} else {
-		currentDate, err = time.Parse(format, date)
+		currentDate, err = time.Parse(consts.FormatDate, date)
 		if err != nil {
 			return "", fmt.Errorf("invalid date format: %v", err)
 		}
@@ -57,7 +57,7 @@ func NextDate(nowIn time.Time, date string, repeat string) (string, error) {
 			}
 		}
 
-		return nextDate.Format(format), nil
+		return nextDate.Format(consts.FormatDate), nil
 
 	case repeat == "y":
 
@@ -67,7 +67,7 @@ func NextDate(nowIn time.Time, date string, repeat string) (string, error) {
 			yearsDiff := now.Year() - nextDate.Year()
 			fmt.Println(yearsDiff)
 			nextDate = nextDate.AddDate(yearsDiff, 0, 0)
-			return nextDate.Format(format), nil
+			return nextDate.Format(consts.FormatDate), nil
 		}
 
 		if !nextDate.After(now) {
@@ -83,7 +83,7 @@ func NextDate(nowIn time.Time, date string, repeat string) (string, error) {
 			}
 		}
 
-		return nextDate.Format(format), nil
+		return nextDate.Format(consts.FormatDate), nil
 
 	default:
 		return "", fmt.Errorf("правило повторения указано в неправильном формате - %s", repeat)

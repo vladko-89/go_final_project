@@ -2,6 +2,7 @@ package date
 
 import (
 	"encoding/json"
+	"final-project/pgk/date_pkg"
 	"net/http"
 	"time"
 )
@@ -25,7 +26,7 @@ func (handler *DateHandler) getNextDate(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	nextDate, err := NextDate(now, dateStr, repeat)
+	nextDate, err := date_pkg.NextDate(now, dateStr, repeat)
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 		res.Header().Set("Content-Type", "application/json")

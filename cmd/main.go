@@ -3,6 +3,7 @@ package main
 import (
 	"final-project/internal/date"
 	"final-project/internal/static"
+	"final-project/internal/tasks"
 	"final-project/pgk/configs"
 	"final-project/pgk/db"
 	"fmt"
@@ -23,6 +24,12 @@ func main() {
 
 	router := http.NewServeMux()
 
+	taskRepository := tasks.NewTaskRepository(db)
+
+	tasks.NewTaskHandler(
+		router,
+		tasks.TaskHandlerDeps{TaskRepository: taskRepository},
+	)
 	static.NewStaticHandler(router)
 
 	date.NewDateHandler(router)
