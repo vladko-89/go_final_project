@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+
 	"final-project/internal/date"
 	"final-project/internal/static"
 	"final-project/internal/tasks"
-	"final-project/pgk/configs"
-	"final-project/pgk/db"
-	"fmt"
-	"net/http"
+	"final-project/pkg/configs"
+	"final-project/pkg/db"
 )
 
 func main() {
@@ -39,6 +40,6 @@ func main() {
 		Handler: router,
 	}
 
-	fmt.Println("Server is running on port 8081")
+	fmt.Printf("Server is running on port %s\n", conf.Port.Port)
 	server.ListenAndServe()
 }

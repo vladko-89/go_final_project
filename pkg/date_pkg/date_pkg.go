@@ -2,11 +2,12 @@ package date_pkg
 
 import (
 	"errors"
-	"final-project/pgk/consts"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
+
+	"final-project/pkg/consts"
 )
 
 func NextDate(nowIn time.Time, date string, repeat string) (string, error) {
@@ -70,6 +71,11 @@ func NextDate(nowIn time.Time, date string, repeat string) (string, error) {
 			return nextDate.Format(consts.FormatDate), nil
 		}
 
+		if nextDate.Before(now) {
+			for nextDate.Before(now) {
+				nextDate = nextDate.AddDate(1, 0, 0)
+			}
+		}
 		if !nextDate.After(now) {
 			nextDate = nextDate.AddDate(1, 0, 0) // Увеличиваем на 1 год
 		} else {

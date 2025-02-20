@@ -3,12 +3,14 @@ package tasks
 import (
 	"database/sql"
 	"encoding/json"
-	"final-project/pgk/consts"
-	"final-project/pgk/date_pkg"
-	response "final-project/pgk/response"
-
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
+
+	"final-project/pkg/consts"
+	"final-project/pkg/date_pkg"
+	response "final-project/pkg/response"
 )
 
 type TaskHandlerDeps struct {
@@ -32,7 +34,7 @@ func NewTaskHandler(
 	router.HandleFunc("DELETE /api/task", handler.Delete())
 	router.HandleFunc("PUT /api/task", handler.Update())
 	router.HandleFunc("POST /api/task/done", handler.Done())
-	router.HandleFunc("/api/tasks", handler.GetList())
+	router.HandleFunc("/api/tasks", handler.List())
 }
 
 func (handler *TaskHandler) Create() http.HandlerFunc {
@@ -52,6 +54,15 @@ func (handler *TaskHandler) Create() http.HandlerFunc {
 		}
 
 		var err error
+
+		if strings.ToLower(task.Date) == consts.TODAY {
+			fmt.Println("today")
+			task.Date = time.Now().Format(consts.FormatDate)
+		}
+
+		if task.Date == strings.ToLower(consts.TODAY) {
+			task.Date = time.Now().Add(24 * time.Hour).Format(consts.FormatDate)
+		}
 
 		// Если повторение не указано
 		if task.Repeat == "" {
@@ -100,7 +111,7 @@ func (handler *TaskHandler) Create() http.HandlerFunc {
 	}
 }
 
-func (handler *TaskHandler) GetList() http.HandlerFunc {
+func (handler *TaskHandler) List() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		rows, err := handler.TaskRepository.GetList()
@@ -123,6 +134,11 @@ func (handler *TaskHandler) GetList() http.HandlerFunc {
 				"comment": comment,
 				"repeat":  repeat,
 			})
+		}
+
+		if err = rows.Err(); err != nil {
+			response.SendError(w, http.StatusInternalServerError, err)
+			return
 		}
 
 		if len(tasks) == 0 {
@@ -209,7 +225,7 @@ func (handler *TaskHandler) Delete() http.HandlerFunc {
 	}
 }
 
-func (handlet *TaskHandler) Update() http.HandlerFunc {
+func (handler *TaskHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var task TaskRow
 		if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
@@ -236,7 +252,7 @@ func (handlet *TaskHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		err := handlet.TaskRepository.Update(&task)
+		err := handler.TaskRepository.Update(&task)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(map[string]string{

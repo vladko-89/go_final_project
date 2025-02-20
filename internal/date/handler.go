@@ -2,9 +2,11 @@ package date
 
 import (
 	"encoding/json"
-	"final-project/pgk/date_pkg"
 	"net/http"
 	"time"
+
+	consts "final-project/pkg/consts"
+	"final-project/pkg/date_pkg"
 )
 
 type DateHandler struct{}
@@ -19,8 +21,7 @@ func (handler *DateHandler) getNextDate(res http.ResponseWriter, req *http.Reque
 	dateStr := req.FormValue("date")
 	repeat := req.FormValue("repeat")
 
-	const format = "20060102"
-	now, err := time.Parse(format, nowStr)
+	now, err := time.Parse(consts.FormatDate, nowStr)
 	if err != nil {
 		http.Error(res, "invalid 'now' parameter", http.StatusBadRequest)
 		return
