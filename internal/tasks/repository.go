@@ -3,6 +3,8 @@ package tasks
 import (
 	"database/sql"
 	"fmt"
+
+	consts "final-project/pkg/consts"
 )
 
 type TaskRepository struct {
@@ -37,9 +39,9 @@ func (repo *TaskRepository) GetList() (*sql.Rows, error) {
 			SELECT id, date, title, comment, repeat
 			FROM scheduler
 			ORDER BY date ASC
-			LIMIT 50;
+			LIMIT ?;
 		`
-	rows, err := repo.Database.Query(query)
+	rows, err := repo.Database.Query(query, consts.Limit)
 
 	if err != nil {
 		return nil, fmt.Errorf("ошибка получения списка задач: %v", err)

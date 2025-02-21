@@ -64,22 +64,11 @@ func NextDate(nowIn time.Time, date string, repeat string) (string, error) {
 
 		nextDate := currentDate
 
-		if nextDate.Year() < now.Year() {
-			yearsDiff := now.Year() - nextDate.Year()
-			fmt.Println(yearsDiff)
-			nextDate = nextDate.AddDate(yearsDiff, 0, 0)
-			return nextDate.Format(consts.FormatDate), nil
-		}
-
 		if nextDate.Before(now) {
+
 			for nextDate.Before(now) {
 				nextDate = nextDate.AddDate(1, 0, 0)
 			}
-		}
-		if !nextDate.After(now) {
-			nextDate = nextDate.AddDate(1, 0, 0) // Увеличиваем на 1 год
-		} else {
-			nextDate = nextDate.AddDate(1, 0, 0) // Увеличиваем на 1 год
 		}
 
 		if nextDate.Month() == time.February && nextDate.Day() == 29 {
